@@ -11,27 +11,13 @@ import {
 } from './services/weather';
 import {
   MAX_SAFE_SURFACE_TEMPERATURE,
-  SURFACE_TEMPERATURE_SCALE,
   estimatePavementTemperature,
-  getPawSafetyStatus,
 } from './services/pavementTemperature';
 
 type WeatherStatus = 'idle' | 'loading' | 'ready' | 'error';
 type SearchStatus = 'idle' | 'loading' | 'ready' | 'error';
 type TemperatureUnit = 'F' | 'C';
 
-const popularLocations = [
-  'San Jose',
-  'Cupertino',
-  'Sunnyvale',
-  'Santa Clara',
-  'San Francisco',
-  'Los Angeles',
-  'New York',
-  'Chicago',
-  'Austin',
-  'Seattle',
-];
 
 function fahrenheitToCelsius(temperature: number): number {
   return (temperature - 32) * (5 / 9);
@@ -48,19 +34,16 @@ function formatTemperature(temperatureFahrenheit: number, unit: TemperatureUnit)
   return `${Math.round(value)}°${unit}`;
 }
 
-function getRiskLabel(temperatureFahrenheit: number): string {
-  const status = getPawSafetyStatus(temperatureFahrenheit);
-
-  if (status === 'unsafe') {
-    return 'absolute risk';
-  }
-
-  if (status === 'caution') {
-    return 'risky';
-  }
-
-  return 'safe';
-}
+const burnRiskRows = [
+  { temperature: '100°F (37.8°C)', painRisk: 'Safe', riskLevel: 'safe' },
+  { temperature: '105°F (40.5°C)', painRisk: '10-30+ minutes', riskLevel: 'caution' },
+  { temperature: '110°F (43°C)', painRisk: '5-15 minutes', riskLevel: 'caution' },
+  { temperature: '120°F (49°C)', painRisk: '1-2 minutes', riskLevel: 'caution' },
+  { temperature: '130°F (54°C)', painRisk: '10-30 seconds', riskLevel: 'danger' },
+  { temperature: '140°F (60°C)', painRisk: '2-5 seconds', riskLevel: 'danger' },
+  { temperature: '145°F (63°C)', painRisk: '1-3 seconds', riskLevel: 'danger' },
+  { temperature: '150°F+ (65°C+)', painRisk: 'Nearly immediate', riskLevel: 'danger' },
+];
 
 function App() {
   const [status, setStatus] = useState<WeatherStatus>('idle');
@@ -237,7 +220,7 @@ function App() {
   return (
     <main className="app-shell">
       <div className="unit-toggle" aria-label="Temperature unit">
-        <span>Temperature</span>
+        <span>Paw Pavement</span>
         <div>
           <button
             className={temperatureUnit === 'F' ? 'active' : ''}
@@ -256,7 +239,7 @@ function App() {
         </div>
       </div>
 
-      <section className="intro" aria-labelledby="page-title">
+      <section className="intro" aria-labelledby="risk-table-title">
         <div className="brand-mark" aria-hidden="true">
           <span className="pad" />
           <span className="toe toe-one" />
@@ -265,10 +248,26 @@ function App() {
           <span className="toe toe-four" />
         </div>
 
-        <div className="intro-copy">
-          <p className="eyebrow">Paw Pavement</p>
-          <h3 id="page-title">Plan a cooler walk with your best friend.</h3>
-
+        <div className="risk-table-section" aria-labelledby="risk-table-title">
+          <h2 id="risk-table-title">APPROXIMATE TIME BEFORE MINOR BURN RISK</h2>
+          <div className="risk-table-wrap">
+            <table className="risk-table">
+              <thead>
+                <tr>
+                  <th scope="col">Surface Temperature</th>
+                  <th scope="col">APPROX TIME</th>
+                </tr>
+              </thead>
+              <tbody>
+                {burnRiskRows.map(({ temperature, painRisk, riskLevel }) => (
+                  <tr className={`risk-row-${riskLevel}`} key={temperature}>
+                    <th scope="row">{temperature}</th>
+                    <td>{painRisk}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
 
         <aside className="quick-view" aria-label="Pavement quick view">
@@ -277,18 +276,6 @@ function App() {
             <strong>
               {formatTemperature(MAX_SAFE_SURFACE_TEMPERATURE, temperatureUnit)}
             </strong>
-          </div>
-
-          <div className="risk-scale">
-            {SURFACE_TEMPERATURE_SCALE.map((temperature) => (
-              <span
-                className={getRiskLabel(temperature).replace(' ', '-')}
-                key={temperature}
-                title={getRiskLabel(temperature)}
-              >
-                {formatTemperature(temperature, temperatureUnit)}
-              </span>
-            ))}
           </div>
 
           <label className="manual-estimator" htmlFor="manual-temperature">
