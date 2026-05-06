@@ -1,0 +1,531 @@
+:root {
+  color: #243026;
+  background: #f6f4ee;
+  font-family:
+    Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+    sans-serif;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+
+.app-shell {
+  min-height: 100vh;
+  display: grid;
+  align-content: center;
+  gap: 1rem;
+  padding: 1rem;
+}
+
+.unit-toggle {
+  width: min(100%, 58rem);
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  color: #58645a;
+  font-size: 0.9rem;
+}
+
+.unit-toggle div {
+  display: inline-flex;
+  padding: 0.2rem;
+  border: 1px solid #d7d2c4;
+  border-radius: 8px;
+  background: #fffdf8;
+}
+
+.unit-toggle button {
+  min-width: 3rem;
+  min-height: 2.2rem;
+  border: 0;
+  border-radius: 6px;
+  color: #58645a;
+  background: transparent;
+  cursor: pointer;
+}
+
+.unit-toggle button.active {
+  color: #fffdf8;
+  background: #2f5e45;
+}
+
+.intro,
+.weather-panel {
+  width: min(100%, 58rem);
+  margin: 0 auto;
+  border: 1px solid #d7d2c4;
+  border-radius: 8px;
+  background: #fffdf8;
+  box-shadow: 0 18px 55px rgba(35, 48, 38, 0.09);
+}
+
+.intro {
+  display: grid;
+  gap: 1.25rem;
+  padding: 1.25rem;
+}
+
+.brand-mark {
+  position: relative;
+  width: 5.5rem;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: #dff0df;
+  border: 1px solid #b8d0b8;
+}
+
+.pad,
+.toe {
+  position: absolute;
+  display: block;
+  background: #2f5e45;
+}
+
+.pad {
+  width: 2.3rem;
+  height: 1.75rem;
+  left: 1.55rem;
+  bottom: 1.25rem;
+  border-radius: 48% 48% 42% 42%;
+}
+
+.toe {
+  width: 0.85rem;
+  height: 1rem;
+  border-radius: 50%;
+}
+
+.toe-one {
+  left: 0.95rem;
+  top: 1.5rem;
+}
+
+.toe-two {
+  left: 1.9rem;
+  top: 0.95rem;
+}
+
+.toe-three {
+  right: 1.9rem;
+  top: 0.95rem;
+}
+
+.toe-four {
+  right: 0.95rem;
+  top: 1.5rem;
+}
+
+.intro-copy {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.eyebrow {
+  margin: 0;
+  color: #2f5e45;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+h1,
+h2,
+h3,
+p {
+  margin: 0;
+}
+
+.intro-copy h2 {
+  max-width: 12ch;
+  font-size: clamp(2.45rem, 18vw, 4.75rem);
+  line-height: 0.95;
+  letter-spacing: 0;
+}
+
+.intro-copy p:not(.eyebrow) {
+  max-width: 38rem;
+  color: #58645a;
+  font-size: 1rem;
+  line-height: 1.65;
+}
+
+.quick-view {
+  display: grid;
+  gap: 0.85rem;
+  padding: 1rem;
+  border: 1px solid #e0dbce;
+  border-radius: 8px;
+  background: #f8f7f1;
+}
+
+.quick-label {
+  color: #58645a;
+  font-size: 0.82rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.quick-view > div:first-child {
+  display: grid;
+  gap: 0.25rem;
+}
+
+.quick-view > div:first-child strong {
+  color: #243026;
+  font-size: 2rem;
+  line-height: 1;
+}
+
+.risk-scale {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 0.35rem;
+}
+
+.risk-scale span {
+  min-height: 2rem;
+  display: grid;
+  place-items: center;
+  border-radius: 6px;
+  color: #243026;
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.risk-scale .safe {
+  background: #dff0df;
+}
+
+.risk-scale .risky {
+  background: #f0e5b6;
+}
+
+.risk-scale .absolute-risk {
+  color: #fffdf8;
+  background: #8b3f33;
+}
+
+.manual-estimator {
+  display: grid;
+  gap: 0.4rem;
+  color: #58645a;
+  font-size: 0.9rem;
+}
+
+.manual-estimator input {
+  width: 100%;
+  min-height: 2.6rem;
+  border: 1px solid #c9c3b4;
+  border-radius: 8px;
+  padding: 0 0.8rem;
+  color: #243026;
+  background: #fffdf8;
+}
+
+.quick-results {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.5rem;
+}
+
+.quick-results span {
+  display: grid;
+  gap: 0.25rem;
+  min-height: 3.6rem;
+  align-content: center;
+  padding: 0.65rem;
+  border-radius: 8px;
+  background: #fffdf8;
+  color: #58645a;
+  font-size: 0.82rem;
+}
+
+.quick-results strong {
+  color: #243026;
+  font-size: 1.2rem;
+}
+
+.weather-panel {
+  display: grid;
+  gap: 1rem;
+  padding: 1rem 1.25rem;
+}
+
+.weather-header {
+  display: grid;
+  gap: 1rem;
+}
+
+.weather-header div {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.weather-panel h2 {
+  font-size: 1rem;
+}
+
+.weather-panel p {
+  margin: 0;
+  color: #58645a;
+  line-height: 1.5;
+}
+
+.weather-button {
+  width: 100%;
+  min-height: 2.85rem;
+  border: 0;
+  border-radius: 8px;
+  color: #fffdf8;
+  background: #2f5e45;
+  cursor: pointer;
+}
+
+.weather-button:disabled {
+  cursor: wait;
+  opacity: 0.7;
+}
+
+.location-search {
+  display: grid;
+  gap: 0.55rem;
+  padding-top: 1rem;
+  border-top: 1px solid #e0dbce;
+}
+
+.location-search label,
+.popular-locations h3 {
+  color: #243026;
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.location-search input {
+  width: 100%;
+  min-height: 2.85rem;
+  border: 1px solid #c9c3b4;
+  border-radius: 8px;
+  padding: 0 0.9rem;
+  color: #243026;
+  background: #fffdf8;
+}
+
+.location-search input:focus {
+  outline: 3px solid rgba(47, 94, 69, 0.18);
+  border-color: #2f5e45;
+}
+
+.search-results {
+  display: grid;
+  gap: 0.4rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.search-results button {
+  width: 100%;
+  min-height: 2.75rem;
+  border: 1px solid #e0dbce;
+  border-radius: 8px;
+  padding: 0.6rem 0.75rem;
+  color: #243026;
+  background: #f8f7f1;
+  text-align: left;
+  cursor: pointer;
+}
+
+.popular-locations {
+  display: grid;
+  gap: 0.65rem;
+}
+
+.popular-locations div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.popular-locations button {
+  min-height: 2.35rem;
+  border: 1px solid #c9c3b4;
+  border-radius: 8px;
+  padding: 0 0.75rem;
+  color: #243026;
+  background: #f8f7f1;
+  cursor: pointer;
+}
+
+.popular-locations button:disabled {
+  cursor: wait;
+  opacity: 0.7;
+}
+
+.coordinates {
+  font-size: 0.9rem;
+}
+
+.weather-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+
+.weather-grid article {
+  display: grid;
+  gap: 0.35rem;
+  min-height: 6rem;
+  align-content: center;
+  padding: 0.9rem;
+  border: 1px solid #e0dbce;
+  border-radius: 8px;
+  background: #f8f7f1;
+}
+
+.weather-grid span {
+  color: #58645a;
+  font-size: 0.82rem;
+}
+
+.weather-grid strong {
+  color: #243026;
+  font-size: 1.55rem;
+  line-height: 1;
+}
+
+.pavement-panel {
+  display: grid;
+  gap: 0.85rem;
+  padding-top: 1rem;
+  border-top: 1px solid #e0dbce;
+}
+
+.pavement-panel h3 {
+  font-size: 1rem;
+}
+
+.surface-grid {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.surface-grid article {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  min-height: 4rem;
+  padding: 0.9rem;
+  border: 1px solid #e0dbce;
+  border-radius: 8px;
+  background: #f8f7f1;
+}
+
+.surface-grid span {
+  color: #58645a;
+  font-size: 0.9rem;
+}
+
+.surface-grid strong {
+  color: #243026;
+  font-size: 1.45rem;
+  line-height: 1;
+}
+
+@media (min-width: 720px) {
+  .app-shell {
+    padding: 2rem;
+  }
+
+  .intro {
+    grid-template-columns: auto minmax(0, 1fr) minmax(14rem, 0.8fr);
+    align-items: center;
+    gap: 1.5rem;
+    padding: 2rem;
+  }
+
+  .brand-mark {
+    width: 8rem;
+  }
+
+  .pad {
+    width: 3.35rem;
+    height: 2.5rem;
+    left: 2.3rem;
+    bottom: 1.75rem;
+  }
+
+  .toe {
+    width: 1.2rem;
+    height: 1.45rem;
+  }
+
+  .toe-one {
+    left: 1.35rem;
+    top: 2.15rem;
+  }
+
+  .toe-two {
+    left: 2.75rem;
+    top: 1.35rem;
+  }
+
+  .toe-three {
+    right: 2.75rem;
+    top: 1.35rem;
+  }
+
+  .toe-four {
+    right: 1.35rem;
+    top: 2.15rem;
+  }
+
+  .weather-header {
+    grid-template-columns: 1fr auto;
+    align-items: center;
+  }
+
+  .weather-button {
+    width: auto;
+    min-width: 10rem;
+    padding: 0 1rem;
+  }
+
+  .weather-panel {
+    padding: 1.25rem 2rem;
+  }
+
+  .weather-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .pavement-panel {
+    grid-template-columns: 1fr 1.4fr;
+    align-items: center;
+  }
+
+  .surface-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
