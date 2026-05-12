@@ -9,6 +9,15 @@ export type CurrentWeather = {
   windSpeed: number;
   cloudCover: number;
   humidity: number;
+  hourly: HourlyWeather[];
+};
+
+export type HourlyWeather = {
+  time: string;
+  temperature: number;
+  windSpeed: number;
+  cloudCover: number;
+  isDay: boolean;
 };
 
 type OpenMeteoResponse = {
@@ -17,6 +26,13 @@ type OpenMeteoResponse = {
     wind_speed_10m?: number;
     cloud_cover?: number;
     relative_humidity_2m?: number;
+  };
+  hourly?: {
+    time?: string[];
+    temperature_2m?: number[];
+    wind_speed_10m?: number[];
+    cloud_cover?: number[];
+    is_day?: number[];
   };
 };
 
@@ -34,6 +50,13 @@ export async function fetchCurrentWeather({
       'cloud_cover',
       'relative_humidity_2m',
     ].join(','),
+    hourly: [
+      'temperature_2m',
+      'wind_speed_10m',
+      'cloud_cover',
+      'is_day',
+    ].join(','),
+    forecast_days: '1',
     temperature_unit: 'fahrenheit',
     wind_speed_unit: 'mph',
   });
@@ -60,10 +83,25 @@ export async function fetchCurrentWeather({
     throw new Error('Weather data is incomplete.');
   }
 
+  const currentTemperature = current.temperature_2m;
+  const currentWindSpeed = current.wind_speed_10m;
+  const currentCloudCover = current.cloud_cover;
+  const currentHumidity = current.relative_humidity_2m;
+  const hourly = data.hourly;
+  const hourlyForecast =
+    hourly?.time?.map((time, index) => ({
+      time,
+      temperature: hourly.temperature_2m?.[index] ?? currentTemperature,
+      windSpeed: hourly.wind_speed_10m?.[index] ?? currentWindSpeed,
+      cloudCover: hourly.cloud_cover?.[index] ?? currentCloudCover,
+      isDay: hourly.is_day?.[index] === 1,
+    })) ?? [];
+
   return {
-    temperature: current.temperature_2m,
-    windSpeed: current.wind_speed_10m,
-    cloudCover: current.cloud_cover,
-    humidity: current.relative_humidity_2m,
+    temperature: currentTemperature,
+    windSpeed: currentWindSpeed,
+    cloudCover: currentCloudCover,
+    humidity: currentHumidity,
+    hourly: hourlyForecast,
   };
 }
