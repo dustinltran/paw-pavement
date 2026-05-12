@@ -449,6 +449,129 @@ p {
   line-height: 1;
 }
 
+.hourly-chart {
+  display: grid;
+  gap: 0.85rem;
+  padding-top: 1rem;
+  border-top: 1px solid #e0dbce;
+}
+
+.hourly-chart-header {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.hourly-chart-header div {
+  display: grid;
+  gap: 0.25rem;
+}
+
+.hourly-chart-header h3 {
+  color: #243026;
+  font-size: 1rem;
+}
+
+.hourly-chart-header span {
+  width: fit-content;
+  border: 1px solid #d7d2c4;
+  border-radius: 8px;
+  padding: 0.4rem 0.55rem;
+  color: #2f5e45;
+  background: #fffdf8;
+  font-size: 0.82rem;
+  font-weight: 800;
+}
+
+.chart-readout {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.5rem;
+}
+
+.chart-readout article {
+  display: grid;
+  gap: 0.25rem;
+  min-height: 4rem;
+  align-content: center;
+  border: 1px solid #e0dbce;
+  border-radius: 8px;
+  padding: 0.65rem;
+  background: #f8f7f1;
+}
+
+.chart-readout span {
+  color: #58645a;
+  font-size: 0.78rem;
+}
+
+.chart-readout strong {
+  color: #243026;
+  font-size: 1.05rem;
+  line-height: 1;
+}
+
+.chart-frame {
+  position: relative;
+  overflow-x: auto;
+  border: 1px solid #e0dbce;
+  border-radius: 8px;
+  background: #fffdf8;
+  cursor: crosshair;
+}
+
+.temperature-chart {
+  display: block;
+  min-width: 42rem;
+  width: 100%;
+}
+
+.daylight-band {
+  fill: #fff3bf;
+  opacity: 0.55;
+}
+
+.chart-axis {
+  stroke: #c9c3b4;
+  stroke-width: 1;
+}
+
+.chart-grid-line {
+  stroke: #e8e2d4;
+  stroke-width: 1;
+}
+
+.temperature-line {
+  fill: none;
+  stroke: #d0852f;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 4;
+}
+
+.chart-point {
+  fill: #fffdf8;
+  stroke: #2f5e45;
+  stroke-width: 2;
+  cursor: pointer;
+}
+
+.chart-point.active,
+.chart-point:focus {
+  fill: #2f5e45;
+  outline: none;
+}
+
+.chart-x-label,
+.chart-y-label {
+  fill: #58645a;
+  font-size: 0.72rem;
+  text-anchor: middle;
+}
+
+.chart-y-label {
+  text-anchor: end;
+}
+
 .pavement-panel {
   display: grid;
   gap: 0.85rem;
@@ -552,6 +675,15 @@ p {
   }
 
   .weather-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .hourly-chart-header {
+    grid-template-columns: 1fr auto;
+    align-items: start;
+  }
+
+  .chart-readout {
     grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 

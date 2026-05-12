@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, type PointerEvent } from 'react';
 import {
   type LocationResult,
   formatLocationName,
@@ -6,6 +6,7 @@ import {
 } from './services/geocoding';
 import {
   type CurrentWeather,
+  type HourlyWeather,
   type WeatherLocation,
   fetchCurrentWeather,
 } from './services/weather';
@@ -44,6 +45,209 @@ const burnRiskRows = [
   { temperature: '145°F (63°C)', painRisk: '1-3 seconds', riskLevel: 'danger' },
   { temperature: '150°F+ (65°C+)', painRisk: 'Nearly immediate', riskLevel: 'danger' },
 ];
+
+type HourlyChartPoint = HourlyWeather & {
+  asphaltTemperature: number;
+  concreteTemperature: number;
+};
+
+function formatHourLabel(time: string): string {
+  return new Intl.DateTimeFormat([], {
+    hour: 'numeric',
+    hour12: true,
+  }).format(new Date(time));
+}
+
+function HourlyWeatherChart({
+  hourly,
+  temperatureUnit,
+}: {
+  hourly: HourlyWeather[];
+  temperatureUnit: TemperatureUnit;
+}) {
+  const [hoveredIndex, setHoveredIndex] = useState(0);
+  const chartPoints: HourlyChartPoint[] = hourly.slice(0, 24).map((hour) => {
+    const surface = estimatePavementTemperature({
+      airTemperature: hour.temperature,
+      cloudCover: hour.cloudCover,
+      windSpeed: hour.windSpeed,
+    });
+
+    return {
+      ...hour,
+      asphaltTemperature: surface.asphaltTemperature,
+      concreteTemperature: surface.concreteTemperature,
+    };
+  });
+
+  if (chartPoints.length < 2) {
+    return null;
+  }
+
+  const activePoint = chartPoints[hoveredIndex] ?? chartPoints[0];
+  const temperatures = chartPoints.map((point) => point.temperature);
+  const minTemperature = Math.floor(Math.min(...temperatures) / 5) * 5;
+  const maxTemperature = Math.ceil(Math.max(...temperatures) / 5) * 5;
+  const temperatureRange = Math.max(maxTemperature - minTemperature, 10);
+  const width = 720;
+  const height = 250;
+  const padding = {
+    top: 22,
+    right: 24,
+    bottom: 40,
+    left: 44,
+  };
+  const innerWidth = width - padding.left - padding.right;
+  const innerHeight = height - padding.top - padding.bottom;
+  const xForIndex = (index: number) =>
+    padding.left + (index / (chartPoints.length - 1)) * innerWidth;
+  const yForTemperature = (temperature: number) =>
+    padding.top +
+    ((maxTemperature - temperature) / temperatureRange) * innerHeight;
+  const linePoints = chartPoints
+    .map((point, index) => `${xForIndex(index)},${yForTemperature(point.temperature)}`)
+    .join(' ');
+  const pointStep = innerWidth / (chartPoints.length - 1);
+  const handleChartPointerMove = (event: PointerEvent<HTMLDivElement>) => {
+    const chart = event.currentTarget.querySelector('svg');
+
+    if (!chart) {
+      return;
+    }
+
+    const bounds = chart.getBoundingClientRect();
+    const chartX = ((event.clientX - bounds.left) / bounds.width) * width;
+    const rawIndex =
+      ((chartX - padding.left) / innerWidth) * (chartPoints.length - 1);
+    const nextIndex = Math.min(
+      chartPoints.length - 1,
+      Math.max(0, Math.round(rawIndex)),
+    );
+
+    setHoveredIndex(nextIndex);
+  };
+
+  return (
+    <section className="hourly-chart" aria-label="Hourly weather and surface forecast">
+      <div className="hourly-chart-header">
+        <div>
+          <h3>Weather Throughout The Day</h3>
+          <p>Hourly air temperature with daylight and surface estimates.</p>
+        </div>
+        <span>{formatHourLabel(activePoint.time)}</span>
+      </div>
+
+      <div className="chart-readout" aria-live="polite">
+        <article>
+          <span>Air</span>
+          <strong>{formatTemperature(activePoint.temperature, temperatureUnit)}</strong>
+        </article>
+        <article>
+          <span>Wind</span>
+          <strong>{Math.round(activePoint.windSpeed)} mph</strong>
+        </article>
+        <article>
+          <span>Asphalt</span>
+          <strong>
+            {formatTemperature(activePoint.asphaltTemperature, temperatureUnit)}
+          </strong>
+        </article>
+        <article>
+          <span>Cement</span>
+          <strong>
+            {formatTemperature(activePoint.concreteTemperature, temperatureUnit)}
+          </strong>
+        </article>
+      </div>
+
+      <div className="chart-frame" onPointerMove={handleChartPointerMove}>
+        <svg
+          className="temperature-chart"
+          viewBox={`0 0 ${width} ${height}`}
+          role="img"
+          aria-label="Hourly temperature chart"
+        >
+          <line
+            className="chart-axis"
+            x1={padding.left}
+            x2={width - padding.right}
+            y1={height - padding.bottom}
+            y2={height - padding.bottom}
+          />
+          <line
+            className="chart-axis"
+            x1={padding.left}
+            x2={padding.left}
+            y1={padding.top}
+            y2={height - padding.bottom}
+          />
+
+          {chartPoints.map((point, index) =>
+            point.isDay ? (
+              <rect
+                className="daylight-band"
+                height={innerHeight}
+                key={`daylight-${point.time}`}
+                width={Math.max(pointStep, 1)}
+                x={xForIndex(index) - pointStep / 2}
+                y={padding.top}
+              />
+            ) : null,
+          )}
+
+          {[minTemperature, maxTemperature].map((temperature) => (
+            <g key={temperature}>
+              <line
+                className="chart-grid-line"
+                x1={padding.left}
+                x2={width - padding.right}
+                y1={yForTemperature(temperature)}
+                y2={yForTemperature(temperature)}
+              />
+              <text
+                className="chart-y-label"
+                x={padding.left - 10}
+                y={yForTemperature(temperature) + 4}
+              >
+                {formatTemperature(temperature, temperatureUnit)}
+              </text>
+            </g>
+          ))}
+
+          <polyline className="temperature-line" points={linePoints} />
+
+          {chartPoints.map((point, index) => (
+            <g key={point.time}>
+              {index % 3 === 0 && (
+                <text
+                  className="chart-x-label"
+                  x={xForIndex(index)}
+                  y={height - 12}
+                >
+                  {formatHourLabel(point.time)}
+                </text>
+              )}
+              <circle
+                aria-label={`${formatHourLabel(point.time)} ${formatTemperature(
+                  point.temperature,
+                  temperatureUnit,
+                )}`}
+                className={index === hoveredIndex ? 'chart-point active' : 'chart-point'}
+                cx={xForIndex(index)}
+                cy={yForTemperature(point.temperature)}
+                onBlur={() => setHoveredIndex(0)}
+                onFocus={() => setHoveredIndex(index)}
+                onMouseEnter={() => setHoveredIndex(index)}
+                r={index === hoveredIndex ? 5 : 3.5}
+                tabIndex={0}
+              />
+            </g>
+          ))}
+        </svg>
+      </div>
+    </section>
+  );
+}
 
 function App() {
   const [status, setStatus] = useState<WeatherStatus>('idle');
@@ -415,6 +619,13 @@ function App() {
             </article>
           </div>
         </div>
+
+        {weather && (
+          <HourlyWeatherChart
+            hourly={weather.hourly}
+            temperatureUnit={temperatureUnit}
+          />
+        )}
       </section>
     </main>
   );
